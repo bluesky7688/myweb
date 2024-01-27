@@ -1,0 +1,27 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v16
+        with:
+          node-version: '16'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build and Deploy to Azure
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_SP_APP_ID }} -p ${{ secrets.AZURE_SP_PASSWORD }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az webapp up --sku F1 --ns-webapp0011 --resource-group ns
